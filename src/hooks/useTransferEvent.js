@@ -26,7 +26,7 @@ const useTransferEvent = () => {
     (() => {
       console.log("Listening...");
       wss_provider.on(filter, (event) => {
-        console.log("NFT Sent:", event);
+        console.log("NFT EVENT:", event);
       });
     })();
     return () => wss_provider.off(filter, handleEvent);
