@@ -6,61 +6,56 @@ import { useEffect, useMemo, useState } from "react";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 
 const useMyNfts = () => {
-    const { address } = useWeb3ModalAccount();
-    const [data, setData] = useState([]);
-    const [idToAddress, setIdToAddress] = useState({});
-    const tokenIDs = useMemo(
-        () => [...Array.from({ length: 30 })].map((_, index) => index),
-        []
-    );
+  const { address } = useWeb3ModalAccount();
+  const [data, setData] = useState([]);
+  const [idToAddress, setIdToAddress] = useState({});
+  const tokenIDs = useMemo(
+    () => [...Array.from({ length: 30 })].map((_, index) => index),
+    []
+  );
 
-    useEffect(() => {
-        (async () => {
-            const itf = new ethers.Interface(erc721);
-            const calls = tokenIDs.map((x) => ({
-                target: import.meta.env.VITE_contract_address,
-                callData: itf.encodeFunctionData("ownerOf", [x]),
-            }));
+  useEffect(() => {
+    (async () => {
+      const itf = new ethers.Interface(erc721);
+      const calls = tokenIDs.map((x) => ({
+        target: import.meta.env.VITE_contract_address,
+        callData: itf.encodeFunctionData("ownerOf", [x]),
+      }));
 
-            const multicall = new ethers.Contract(
-                import.meta.env.VITE_multicall_address,
-                multicallAbi,
-                readOnlyProvider
-            );
+      const multicall = new ethers.Contract(
+        import.meta.env.VITE_multicall_address,
+        multicallAbi,
+        readOnlyProvider
+      );
 
-            const callResults = await multicall.tryAggregate.staticCall(
-                false,
-                calls
-            );
+      const callResults = await multicall.tryAggregate.staticCall(false, calls);
 
-            const validResponsesIndex = [];
-            const validResponses = callResults.filter((x, i) => {
-                if (x[0] === true) {
-                    validResponsesIndex.push(i);
-                    return true;
-                }
-                return false;
-            });
+      const validResponsesIndex = [];
+      const validResponses = callResults.filter((x, i) => {
+        if (x[0] === true) {
+          validResponsesIndex.push(i);
+          return true;
+        }
+        return false;
+      });
 
-            const decodedResponses = validResponses.map((x) =>
-                itf.decodeFunctionResult("ownerOf", x[1])
-            );
+      const decodedResponses = validResponses.map((x) =>
+        itf.decodeFunctionResult("ownerOf", x[1])
+      );
 
-            const ownedTokenIds = [];
-            const ownerAddressByIds = {}
-            decodedResponses.forEach((addr, index) => {
-                ownerAddressByIds[validResponsesIndex[index]] = addr.toString();
-                if (
-                    String(addr).toLowerCase() === String(address).toLowerCase()
-                )
-                    ownedTokenIds.push(validResponsesIndex[index]);
-            });
-            setIdToAddress(() => ownerAddressByIds)
-            setData(ownedTokenIds);
-        })();
-    }, [address, tokenIDs]);
+      const ownedTokenIds = [];
+      const ownerAddressByIds = {};
+      decodedResponses.forEach((addr, index) => {
+        ownerAddressByIds[validResponsesIndex[index]] = addr.toString();
+        if (String(addr).toLowerCase() === String(address).toLowerCase())
+          ownedTokenIds.push(validResponsesIndex[index]);
+      });
+      setIdToAddress(() => ownerAddressByIds);
+      setData(ownedTokenIds);
+    })();
+  }, [address, tokenIDs]);
 
-    return { data, idToAddress };
+  return { data, idToAddress };
 };
 
 export default useMyNfts;

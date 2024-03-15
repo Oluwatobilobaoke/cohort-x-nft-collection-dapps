@@ -1,10 +1,13 @@
+import "@radix-ui/themes/styles.css";
 import { Box, Button, Container, Flex, Link, Text } from "@radix-ui/themes";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+
 import { configureWeb3Modal } from "./connection";
-import "@radix-ui/themes/styles.css";
+
 import Header from "./component/Header";
 import AppTabs from "./component/AppTabs";
 import TransferModal from "./component/TansferModal";
+
 import useCollections from "./hooks/useCollections";
 import useMyNfts from "./hooks/useMyNfts";
 import useMintNft from "./hooks/useMintNft";
@@ -66,7 +69,16 @@ function App() {
                     />
                     <Text className="block text-2xl">Name: {x.name}</Text>
                     <Text className="block">Description: {x.description}</Text>
-                    {isConnected && idToAddress[index] === undefined ? (
+                    {!isConnected ? null : idToAddress[index] === undefined ? (
+                      <Button
+                        onClick={async () => {
+                          mintNft(x.edition);
+                        }}
+                        className="px-8 py-2 text-xl mt-2"
+                      >
+                        Mint
+                      </Button>
+                    ) : (
                       <Flex justify={"center"} gap={"2"}>
                         <Text>{idToAddress[index].slice(0, 8)}...</Text>
                         <Link
@@ -76,15 +88,6 @@ function App() {
                           Show on OpenSea
                         </Link>
                       </Flex>
-                    ) : (
-                      <Button
-                        onClick={async () => {
-                          mintNft(x.edition);
-                        }}
-                        className="px-8 py-2 text-xl mt-2"
-                      >
-                        Mint
-                      </Button>
                     )}
                   </Box>
                 ))
