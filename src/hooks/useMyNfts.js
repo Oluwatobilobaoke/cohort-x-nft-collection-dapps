@@ -55,7 +55,7 @@ const useMyNfts = () => {
       setIdToAddress(() => ownerAddressByIds);
       setData(ownedTokenIds);
     })();
-  }, [address, tokenIDs]);
+  }, [address, tokenIDs, handleEvent]);
 
   return { data, idToAddress };
 };
