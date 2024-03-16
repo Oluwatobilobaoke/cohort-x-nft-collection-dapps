@@ -1,4 +1,3 @@
-import "@radix-ui/themes/styles.css";
 import { Box, Button, Container, Flex, Link, Text } from "@radix-ui/themes";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 

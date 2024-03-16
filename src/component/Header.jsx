@@ -1,7 +1,7 @@
 import { Flex } from "@radix-ui/themes";
 
 export default function Header() {
-    return (
+  return (
         <div className="flex justify-between items-center">
             <div>MATA NFT</div>
             <Flex gap={"4"} align={"center"}>
